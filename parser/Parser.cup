@@ -1,0 +1,90 @@
+package ltl2aut.cup_parser;
+
+import ltl2aut.ltl.*;
+import ltl2aut.formula.*;
+
+parser code {:
+	/**
+	 * @see java_cup.runtime.lr_parser#report_error(java.lang.String, java.lang.Object)
+	 */
+	public void report_error(String message, Object info) { /* Ignore simple error */
+	}
+
+	/**
+	 * @see java_cup.runtime.lr_parser#report_fatal_error(java.lang.String, java.lang.Object)
+	 */
+	public void report_fatal_error(String message, Object info) throws Exception {
+		StringBuilder m = new StringBuilder("Error");
+
+		if (info instanceof java_cup.runtime.Symbol) {
+			java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) info);
+
+			if (s.left >= 0) {
+				m.append(" in line "+(s.left+1));
+				if (s.right >= 0)
+					m.append(", column "+(s.right+1));
+			}
+		}
+
+		m.append(" : "+message);
+
+		throw new SyntaxParserException(m.toString());
+    }
+    
+    FormulaFactory<Formula> factory = DefaultFormulaFactory.instance;
+:};
+
+/* ------------Declaration of Terminals and Non Terminals Section----------- */
+
+terminal LPAREN, RPAREN, TRUE, FALSE, NOT, AND, OR, IMPLIES, EQUALS, NEXT, WNEXT, GLOBALLY, FUTURE, UNTIL, WUNTIL, RELEASES, WRELEASES;
+
+terminal String ID;
+non terminal Formula formula;
+
+/* -------------Precedence and Associatively of Terminals Section----------- */
+
+precedence left IMPLIES, EQUALS;
+precedence left OR;
+precedence left AND;
+precedence left UNTIL, WUNTIL;
+precedence left RELEASES, WRELEASES;
+precedence right FUTURE, GLOBALLY, NOT, NEXT;
+
+/* ----------------------------Grammar Section-------------------- */
+
+	formula		::= 
+					  LPAREN formula:f RPAREN
+						{: RESULT = f; :}
+					| TRUE
+						{: RESULT = parser.factory.True(); :}
+					| FALSE
+						{: RESULT = parser.factory.False(); :}
+					| NOT formula:f
+						{: RESULT = parser.factory.Not(f); :}
+					| formula:f1 AND formula:f2
+						{: RESULT = parser.factory.And(f1, f2); :}
+					| formula:f1 OR formula:f2
+						{: RESULT = parser.factory.Or(f1, f2); :}
+					| formula:f1 IMPLIES formula:f2
+						{: RESULT = parser.factory.Implies(f1, f2); :}
+					| formula:f1 EQUALS formula:f2
+						{: RESULT = parser.factory.Equal(f1, f2); :}
+					| GLOBALLY formula:f
+						{: RESULT = parser.factory.Always(f); :}
+					| FUTURE formula:f
+						{: RESULT = parser.factory.Eventually(f); :}
+					| NEXT formula:f
+						{: RESULT = parser.factory.Next(f); :}
+					| WNEXT formula:f
+						{: RESULT = parser.factory.WNext(f); :}
+					| formula:f1 UNTIL formula:f2
+						{: RESULT = parser.factory.Until(f1, f2); :}
+					| formula:f1 WUNTIL formula:f2
+						{: RESULT = parser.factory.WUntil(f1, f2); :}
+					| formula:f1 RELEASES formula:f2
+						{: RESULT = parser.factory.Release(f1, f2); :}
+					| formula:f1 WRELEASES formula:f2
+						{: RESULT = parser.factory.WRelease(f1, f2); :}
+					| ID:ap
+						{: RESULT = parser.factory.Proposition(ap); :}
+					;
