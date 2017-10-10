@@ -63,6 +63,7 @@ public class SequenceBasedEncoder extends Encoder{
 				int p = 0;
 				//for (XEvent event : trace) {
 				while (p<trace.size() && p<maxSize){
+					//这里的编码似乎是按照位置-对应-标签
 					XEvent event = trace.get(p);
 					String eventLabel = XConceptExtension.instance().extractName(
 							event);
@@ -163,6 +164,7 @@ public class SequenceBasedEncoder extends Encoder{
 		int p=0;
 		//for (XEvent event : trace) {
 		while (p<trace.size() && p<maxSize){
+			//这里的编码似乎是按照位置-对应-标签
 			XEvent event = trace.get(p);
 			String eventLabel = XConceptExtension.instance().extractName(
 					event);

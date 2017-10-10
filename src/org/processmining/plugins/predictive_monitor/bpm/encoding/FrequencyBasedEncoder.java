@@ -45,7 +45,7 @@ public class FrequencyBasedEncoder extends Encoder {
 	}
 
 	public void encodeTraces(XLog logTracesToEncode) {
-
+		//构建event字母表
 		for (XTrace trace : logTracesToEncode) {
 			for (XEvent event : trace) {
 				String eventLabel = XConceptExtension.instance().extractName(
@@ -72,7 +72,7 @@ public class FrequencyBasedEncoder extends Encoder {
 				logTracesToEncode.size());
 
 		
-		
+		//计算每个位置所对应event的数量 构建向量
 		int i = 0;
 		for (XTrace trace : logTracesToEncode) {
 			Instance instance = new DenseInstance(alphabetMap.size());
@@ -97,6 +97,7 @@ public class FrequencyBasedEncoder extends Encoder {
 
 	}
 
+	//patterns记录所有属性值 只计算是否存在，不计算出现频率
 	public void encodeTracesBasedOnPatternOccurrence(XLog logTracesToEncode,
 			List<Pattern> patterns) {
 
@@ -132,7 +133,7 @@ public class FrequencyBasedEncoder extends Encoder {
 		}
 
 	}
-
+	//patterns记录所有属性值 计算出现频率
 	public void encodeTracesBasedOnPatternFrequency(XLog logTracesToEncode,
 			List<Pattern> patterns) {
 
@@ -145,6 +146,7 @@ public class FrequencyBasedEncoder extends Encoder {
 				logTracesToEncode.size());
 
 		int i = 0;
+		//kmp字符串匹配算法
 		KMPMatcher kmpMatcher = new KMPMatcher();
 		for (XTrace trace : logTracesToEncode) {
 			Instance instance = new DenseInstance(patterns.size());
@@ -165,7 +167,7 @@ public class FrequencyBasedEncoder extends Encoder {
 		}
 
 	}
-	
+	//patterns记录所有属性值 输入一个trace 得到包含trace及pattern内所有label的频数
 	public Map<String, Double> encodeTraceBasedOnEventAndPatternFrequency(
 			XTrace trace, List<Pattern> patterns) {
 		Map<String, Double> freqs = new HashMap<String, Double>();

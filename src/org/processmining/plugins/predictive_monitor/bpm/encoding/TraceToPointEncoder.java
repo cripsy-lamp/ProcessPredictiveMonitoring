@@ -47,6 +47,7 @@ public class TraceToPointEncoder {
 		for (XEvent event : trace) {
 			traceArrayList.add(XConceptExtension.instance().extractName(event));
 		}
+		//false表示未访问过
 		point = new TracePoint(false, traceArrayList);
 		return point;
 	}
